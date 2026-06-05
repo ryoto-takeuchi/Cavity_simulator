@@ -1,0 +1,50 @@
+wavelength: 1064 nm
+
+layout:
+  start: [0 mm, 0 mm]
+  direction: 0 deg
+  mirror_size: 12.7 mm
+  beam_radius_scale: 1
+
+cavity:
+  type: linear
+
+elements:
+  - name: M1
+    type: curved_mirror
+    Rc: 1.77 m
+    AOI: 0 deg
+    T: 100 ppm
+    L: 10 ppm
+
+  - name: space12
+    type: space
+    length: 100 mm
+
+  - name: T1
+    type: curved_mirror
+    Rc: -31 mm
+    AOI: 5 deg
+    T: 20 ppm
+    L: 10 ppm
+
+  - name: space23
+    type: space
+    length: 100 mm
+
+  - name: T2
+    type: curved_mirror
+    Rc: 229 mm
+    AOI: -5 deg
+    T: 20 ppm
+    L: 10 ppm
+
+  - name: space34
+    type: space
+    length: 100 mm
+
+  - name: M4
+    type: mirror
+    AOI: 0 deg
+    T: 20 ppm
+    L: 10 ppm

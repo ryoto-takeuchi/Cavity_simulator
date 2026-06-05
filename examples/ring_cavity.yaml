@@ -1,0 +1,42 @@
+wavelength: 813 nm
+
+layout:
+  start: [0 mm, 0 mm]
+  direction: 0 deg
+  mirror_size: 12.7 mm
+  beam_radius_scale: 20
+
+cavity:
+  type: ring
+
+elements:
+  - name: M1
+    type: mirror
+    AOI: -37.5 deg
+    T: 0.2 %
+    L: 10 ppm
+
+  - name: arm_12
+    type: space
+    length: 89 mm
+
+  - name: M2
+    type: curved_mirror
+    Rc: 150 mm
+    AOI: -7.5 deg
+    T: 2 %
+    L: 10 ppm
+
+  - name: arm_23
+    type: space
+    length: 85.9675 mm
+
+  - name: M3
+    type: mirror
+    AOI: -45 deg
+    T: 0.2 %
+    L: 10 ppm
+
+  - name: arm_31
+    type: space
+    length: 23.0345 mm

@@ -1,0 +1,29 @@
+wavelength: 698 nm
+
+layout:
+  start: [0 mm, 0 mm]
+  direction: 0 deg
+  mirror_size: 12.7 mm
+  beam_radius_scale: 25
+
+cavity:
+  type: linear
+
+elements:
+  - name: M1
+    type: mirror
+    R: inf
+    AOI: 0 deg
+    T: 100 ppm
+    L: 10 ppm
+
+  - name: space_1
+    type: space
+    length: 100 mm
+
+  - name: M2
+    type: curved_mirror
+    Rc: 200 mm
+    AOI: 0 deg
+    T: 10 ppm
+    L: 10 ppm

@@ -1,0 +1,38 @@
+wavelength: 1064 nm
+
+layout:
+  start: [0 mm, 0 mm]
+  direction: 0 deg
+  mirror_size: 12.7 mm
+  beam_radius_scale: 25
+
+cavity:
+  type: linear
+
+elements:
+  - name: M1
+    type: curved_mirror
+    Rc: 200 mm
+    AOI: 0 deg
+    T: 100 ppm
+    L: 10 ppm
+
+  - name: space_before_lens
+    type: space
+    length: 50 mm
+
+  - name: intracavity_lens
+    type: thin_lens
+    f: 500 mm
+    L: 200 ppm
+
+  - name: space_after_lens
+    type: space
+    length: 50 mm
+
+  - name: M2
+    type: curved_mirror
+    Rc: 200 mm
+    AOI: 0 deg
+    T: 20 ppm
+    L: 10 ppm
