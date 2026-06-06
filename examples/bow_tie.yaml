@@ -4,7 +4,10 @@ layout:
   start: [0 mm, 0 mm]
   direction: 0 deg
   mirror_size: 12.7 mm
-  beam_radius_scale: 20
+  beam_radius_scale: 1
+  closure:
+    variables:
+      - long_arm_12.length
 
 cavity:
   type: ring
@@ -12,42 +15,42 @@ cavity:
 elements:
   - name: M1
     type: mirror
-    AOI: -45 deg
+    AOI: -5 deg
     T: 150 ppm
     L: 10 ppm
 
   - name: long_arm_12
     type: space
-    length: 40 mm
+    length: 50 mm
 
   - name: M2
     type: curved_mirror
-    Rc: 150 mm
+    Rc: 250 mm
     AOI: -5 deg
     T: 20 ppm
     L: 10 ppm
 
   - name: short_arm_23
     type: space
-    length: 10 mm
+    length: 50 mm
 
   - name: M3
     type: curved_mirror
-    Rc: 150 mm
+    Rc: 250 mm
     AOI: 5 deg
     T: 20 ppm
     L: 10 ppm
 
   - name: long_arm_34
     type: space
-    length: 40 mm
+    length: 50 mm
 
   - name: M4
     type: mirror
-    AOI: -45 deg
+    AOI: 5 deg
     T: 20 ppm
     L: 10 ppm
 
   - name: short_arm_41
     type: space
-    length: 10 mm
+    length: 50 mm

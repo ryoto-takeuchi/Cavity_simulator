@@ -49,6 +49,10 @@ After installation, the console entry point is also available:
 cavity-design examples\two_mirror.yaml --summary --plot --output outputs\two_mirror
 ```
 
+If one transverse plane is unstable, the beam plots skip that plane and annotate
+the saved figure. If both planes are unstable, the beam plot fails with a clear
+error.
+
 ## Example Config
 
 ```yaml
@@ -231,6 +235,31 @@ draw as a retraced physical layout.
 Curved mirrors are drawn as circular arcs using the signed `Rc` and
 `layout.mirror_size` as the chord length. The layout beam envelope currently
 uses the tangential eigenmode.
+
+The CLI also checks whether the reconstructed layout closes. It reports the
+position error and direction error in the summary. If the path does not close,
+`layout.png` draws the missing final connection back to the start as a red
+dashed closure gap. The ABCD calculation is still performed from the listed
+round-trip sequence; the warning means the 2D geometry is not yet a physically
+closed layout.
+
+If selected arm lengths are allowed to move, declare them explicitly under
+`layout.closure.variables`:
+
+```yaml
+layout:
+  closure:
+    variables:
+      - long_arm_12.length
+      - short_arm_41.length
+```
+
+Only variables of the form `<space_name>.length` are supported for now. The
+solver adjusts those `Space` lengths before ABCD matrices, FSR, metrics, and
+plots are computed, and the CLI reports each original and adjusted length. Space
+lengths can close position error only; if the final direction does not match the
+initial direction, the tool raises a clear error instead of pretending the
+layout can be fixed by arm lengths.
 
 ## Gaussian Convention
 

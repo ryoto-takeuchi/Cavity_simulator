@@ -9,6 +9,7 @@ from pathlib import Path
 
 from cavity_designer.core.cavity import CavityError
 from cavity_designer.core.elements import PLANES
+from cavity_designer.core.layout import compute_cavity_layout
 from cavity_designer.core.metrics import compute_metrics
 from cavity_designer.io.parser import ConfigError, load_cavity
 from cavity_designer.plot.beam_plot import plot_beam_radius, plot_wavefront_curvature
@@ -48,6 +49,7 @@ def main(argv: list[str] | None = None) -> int:
 
 def format_summary(cavity) -> str:
     metrics = compute_metrics(cavity)
+    layout = compute_cavity_layout(cavity)
     lines: list[str] = []
     lines.extend(
         [
@@ -64,8 +66,35 @@ def format_summary(cavity) -> str:
             f"Physical path: {_format_physical_path(cavity)}",
             f"ABCD sequence used: {_format_abcd_sequence(cavity)}",
             "",
+            "Layout closure",
+            "--------------",
+            f"Closed: {'yes' if layout.is_closed else 'no'}",
+            f"Position error: {layout.closure_error * 1e3:.6g} mm",
+            f"Direction error: {degrees(layout.direction_error):.6g} degree",
         ]
     )
+    if not layout.is_closed:
+        lines.append("Warning: Layout path is not geometrically closed; ABCD calculations still use the listed round-trip sequence.")
+    lines.append("")
+    if cavity.layout.closure.enabled:
+        lines.extend(
+            [
+                "Layout closure adjustment",
+                "-------------------------",
+                "Applied before ABCD/metrics: yes",
+            ]
+        )
+        if cavity.layout_adjustments:
+            for adjustment in cavity.layout_adjustments:
+                lines.append(
+                    f"{adjustment.variable}: "
+                    f"{adjustment.original_length * 1e3:.6g} mm -> "
+                    f"{adjustment.adjusted_length * 1e3:.6g} mm "
+                    f"(delta {adjustment.delta * 1e3:+.6g} mm)"
+                )
+        else:
+            lines.append("No length adjustment was required.")
+        lines.append("")
 
     for plane in PLANES:
         stability = cavity.stability(plane)

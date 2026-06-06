@@ -51,11 +51,31 @@ class ElementMarker:
 
 
 @dataclass(frozen=True)
+class LayoutClosureConfig:
+    enabled: bool = False
+    variables: tuple[str, ...] = ()
+    position_tolerance: float = 1e-9
+    direction_tolerance: float = 1e-9
+
+
+@dataclass(frozen=True)
+class LayoutClosureAdjustment:
+    variable: str
+    original_length: float
+    adjusted_length: float
+
+    @property
+    def delta(self) -> float:
+        return self.adjusted_length - self.original_length
+
+
+@dataclass(frozen=True)
 class LayoutConfig:
     start: tuple[float, float] = (0.0, 0.0)
     direction: float = 0.0
     mirror_size: float = 0.01
     beam_radius_scale: float = 1.0
+    closure: LayoutClosureConfig = LayoutClosureConfig()
 
 
 @dataclass
@@ -64,6 +84,7 @@ class Cavity:
     wavelength: float
     elements: list[OpticalElement]
     layout: LayoutConfig = LayoutConfig()
+    layout_adjustments: tuple[LayoutClosureAdjustment, ...] = ()
 
     def __post_init__(self) -> None:
         if self.cavity_type not in {"linear", "ring"}:

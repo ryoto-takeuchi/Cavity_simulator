@@ -8,8 +8,9 @@ from typing import Any
 
 import yaml
 
-from cavity_designer.core.cavity import Cavity, LayoutConfig
+from cavity_designer.core.cavity import Cavity, LayoutClosureConfig, LayoutConfig
 from cavity_designer.core.elements import CurvedMirror, CustomABCD, FlatMirror, Space, ThinLens
+from cavity_designer.core.layout import apply_layout_closure_adjustment
 
 
 class ConfigError(ValueError):
@@ -65,7 +66,8 @@ def parse_cavity_config(raw: dict[str, Any]) -> Cavity:
     if not isinstance(elements_raw, list) or not elements_raw:
         raise ConfigError("Configuration must contain a non-empty 'elements' list.")
     elements = [_parse_element(index, element_raw) for index, element_raw in enumerate(elements_raw, start=1)]
-    return Cavity(cavity_type=cavity_type, wavelength=wavelength, elements=elements, layout=layout)
+    cavity = Cavity(cavity_type=cavity_type, wavelength=wavelength, elements=elements, layout=layout)
+    return apply_layout_closure_adjustment(cavity)
 
 
 def parse_length(value: Any, field_name: str, allow_inf: bool = False, allow_negative: bool = False) -> float:
@@ -224,11 +226,45 @@ def _parse_layout(raw: Any) -> LayoutConfig:
     beam_radius_scale = parse_dimensionless(raw.get("beam_radius_scale"), "layout.beam_radius_scale", 1.0)
     if beam_radius_scale <= 0:
         raise ConfigError("layout.beam_radius_scale must be positive.")
+    closure = _parse_layout_closure(raw.get("closure"))
     return LayoutConfig(
         start=start,
         direction=direction,
         mirror_size=mirror_size,
         beam_radius_scale=beam_radius_scale,
+        closure=closure,
+    )
+
+
+def _parse_layout_closure(raw: Any) -> LayoutClosureConfig:
+    if raw is None:
+        return LayoutClosureConfig()
+    if not isinstance(raw, dict):
+        raise ConfigError("layout.closure must be a mapping.")
+
+    variables_raw = raw.get("variables", ())
+    if variables_raw is None:
+        variables_raw = ()
+    if not isinstance(variables_raw, (list, tuple)):
+        raise ConfigError("layout.closure.variables must be a list of strings.")
+    variables = tuple(str(variable) for variable in variables_raw)
+    enabled = bool(raw.get("enabled", bool(variables)))
+    if enabled and not variables:
+        raise ConfigError("layout.closure.enabled requires layout.closure.variables.")
+
+    position_tolerance = parse_length(
+        raw.get("position_tolerance", "1 nm"),
+        "layout.closure.position_tolerance",
+    )
+    direction_tolerance = parse_angle(
+        raw.get("direction_tolerance", "1e-9 rad"),
+        "layout.closure.direction_tolerance",
+    )
+    return LayoutClosureConfig(
+        enabled=enabled,
+        variables=variables,
+        position_tolerance=position_tolerance,
+        direction_tolerance=direction_tolerance,
     )
 
 

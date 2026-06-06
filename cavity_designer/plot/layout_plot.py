@@ -13,7 +13,7 @@ import numpy as np
 
 from cavity_designer.core.cavity import Cavity
 from cavity_designer.core.elements import Plane
-from cavity_designer.core.layout import LayoutOptic, compute_cavity_layout
+from cavity_designer.core.layout import CavityLayout, LayoutOptic, compute_cavity_layout
 
 
 def plot_cavity_layout(
@@ -31,6 +31,7 @@ def plot_cavity_layout(
     if len(points) > 1:
         ax.plot(points[:, 0] * 1e3, points[:, 1] * 1e3, color="#f28e2b", linewidth=2.0, label="beam path")
         ax.scatter(points[:, 0] * 1e3, points[:, 1] * 1e3, s=16, color="#f28e2b", zorder=3)
+    _draw_closure_gap(ax, layout)
 
     symbol_size = cavity.layout.mirror_size
     for optic in layout.optics:
@@ -75,6 +76,17 @@ def _draw_beam_envelope(
         )
         ax.plot(upper[:, 0] * 1e3, upper[:, 1] * 1e3, color="#f28e2b", linewidth=0.8, alpha=0.45, label="_nolegend_")
         ax.plot(lower[:, 0] * 1e3, lower[:, 1] * 1e3, color="#f28e2b", linewidth=0.8, alpha=0.45, label="_nolegend_")
+
+
+def _draw_closure_gap(ax: plt.Axes, layout: CavityLayout) -> bool:
+    if layout.is_closed or len(layout.beam_points) < 2:
+        return False
+    start = np.array(layout.beam_points[0], dtype=float)
+    end = np.array(layout.beam_points[-1], dtype=float)
+    gap = np.vstack([end, start]) * 1e3
+    ax.plot(gap[:, 0], gap[:, 1], color="#d62728", linestyle="--", linewidth=1.8, label="closure gap")
+    ax.scatter(gap[0, 0], gap[0, 1], marker="x", s=48, color="#d62728", zorder=4, label="_nolegend_")
+    return True
 
 
 def _beam_envelope_points(
