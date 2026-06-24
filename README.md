@@ -211,6 +211,17 @@ layout:
 
 `start` and `direction` choose the initial ray position and direction.
 `mirror_size` sets a common drawn aperture length for all mirrors.
+Individual mirrors can override it with an element-local layout block:
+
+```yaml
+elements:
+  - name: M2
+    type: curved_mirror
+    Rc: 150 mm
+    layout:
+      mirror_size: 6.35 mm
+```
+
 `beam_radius_scale` multiplies the plotted Gaussian beam-radius envelope; use
 `1` for true scale, and larger values when micrometer-scale beams should be
 visible on centimeter-scale layouts.
@@ -232,8 +243,8 @@ M1 -> M2 -> M3 -> M4 -> M3 -> M2 -> M1
 
 draw as a retraced physical layout.
 
-Curved mirrors are drawn as circular arcs using the signed `Rc` and
-`layout.mirror_size` as the chord length. The layout beam envelope currently
+Curved mirrors are drawn as circular arcs using the signed `Rc` and the
+applicable mirror size as the chord length. The layout beam envelope currently
 uses the tangential eigenmode.
 
 The CLI also checks whether the reconstructed layout closes. It reports the

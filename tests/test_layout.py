@@ -163,6 +163,33 @@ def test_layout_mirror_size_is_parsed():
     assert cavity.layout.beam_radius_scale == pytest.approx(40)
 
 
+def test_element_layout_mirror_size_overrides_common_mirror_size():
+    cavity = parse_cavity_config(
+        {
+            "wavelength": "1064 nm",
+            "layout": {"mirror_size": "25 mm"},
+            "cavity": {"type": "linear"},
+            "elements": [
+                {"name": "M1", "type": "mirror"},
+                {"name": "S12", "type": "space", "length": "50 mm"},
+                {
+                    "name": "M2",
+                    "type": "curved_mirror",
+                    "Rc": "150 mm",
+                    "layout": {"mirror_size": "6.35 mm"},
+                },
+            ],
+        }
+    )
+
+    layout = compute_cavity_layout(cavity)
+    optics = {optic.name: optic for optic in layout.optics}
+
+    assert cavity.layout.mirror_size == pytest.approx(0.025)
+    assert optics["M1"].mirror_size is None
+    assert optics["M2"].mirror_size == pytest.approx(0.00635)
+
+
 def test_curved_mirror_plot_points_use_signed_roc_sag():
     position = np.array([0.0, 0.0])
     positive = _curved_mirror_points(position, 0.0, 0.05, 0.02)

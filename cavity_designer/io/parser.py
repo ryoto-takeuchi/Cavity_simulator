@@ -170,6 +170,7 @@ def _parse_element(index: int, raw: Any) -> object:
             power_transmission_value=parse_power(raw.get("T", raw.get("power_transmission")), f"{name}.T", 0.0),
             power_loss_value=parse_power(raw.get("L", raw.get("power_loss")), f"{name}.L", 0.0),
             power_reflectivity=_optional_reflectivity(raw, name),
+            layout_mirror_size=_optional_element_layout_mirror_size(raw, name),
             angle_of_incidence=parse_angle(
                 raw.get("AOI", raw.get("angle_of_incidence")), f"{name}.AOI", allow_negative=True
             ),
@@ -184,6 +185,7 @@ def _parse_element(index: int, raw: Any) -> object:
             power_transmission_value=parse_power(raw.get("T", raw.get("power_transmission")), f"{name}.T", 0.0),
             power_loss_value=parse_power(raw.get("L", raw.get("power_loss")), f"{name}.L", 0.0),
             power_reflectivity=_optional_reflectivity(raw, name),
+            layout_mirror_size=_optional_element_layout_mirror_size(raw, name),
             radius_of_curvature=parse_length(radius_value, f"{name}.Rc", allow_inf=True, allow_negative=True),
             angle_of_incidence=parse_angle(
                 raw.get("AOI", raw.get("angle_of_incidence")), f"{name}.AOI", allow_negative=True
@@ -275,6 +277,20 @@ def _optional_reflectivity(raw: dict[str, Any], name: str) -> float | None:
     if isinstance(value, str) and value.strip().lower() in {"inf", "+inf", "infinity", "+infinity"}:
         return None
     return parse_power(value, f"{name}.R")
+
+
+def _optional_element_layout_mirror_size(raw: dict[str, Any], name: str) -> float | None:
+    layout_raw = raw.get("layout")
+    if layout_raw is None:
+        return None
+    if not isinstance(layout_raw, dict):
+        raise ConfigError(f"{name}.layout must be a mapping.")
+    if "mirror_size" not in layout_raw:
+        return None
+    mirror_size = parse_length(layout_raw["mirror_size"], f"{name}.layout.mirror_size")
+    if mirror_size <= 0:
+        raise ConfigError(f"{name}.layout.mirror_size must be positive.")
+    return mirror_size
 
 
 def _parse_number_unit(value: Any, field_name: str) -> tuple[float, str | None]:

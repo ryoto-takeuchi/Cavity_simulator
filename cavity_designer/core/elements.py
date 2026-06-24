@@ -121,6 +121,7 @@ class Mirror(OpticalElement):
     power_transmission_value: float = 0.0
     power_loss_value: float = 0.0
     power_reflectivity: float | None = None
+    layout_mirror_size: float | None = None
 
     def __post_init__(self) -> None:
         reflectivity = 1.0 - self.power_transmission_value - self.power_loss_value
@@ -133,6 +134,8 @@ class Mirror(OpticalElement):
             self.power_loss_value,
         )
         object.__setattr__(self, "power_reflectivity", reflectivity)
+        if self.layout_mirror_size is not None and self.layout_mirror_size <= 0.0:
+            raise ElementError(f"Mirror {self.name} has non-positive layout mirror size.")
 
     @property
     def power_transmission(self) -> float:

@@ -25,6 +25,7 @@ class LayoutOptic:
     tangent_angle: float | None = None
     angle_of_incidence: float | None = None
     radius_of_curvature: float | None = None
+    mirror_size: float | None = None
 
 
 @dataclass(frozen=True)
@@ -244,6 +245,7 @@ def _record_optic(
         tangent_angle=tangent_angle if tangent_angle is not None else (existing.tangent_angle if existing else None),
         angle_of_incidence=getattr(element, "angle_of_incidence", None),
         radius_of_curvature=getattr(element, "radius_of_curvature", None),
+        mirror_size=getattr(element, "layout_mirror_size", None),
     )
     optics_by_name[element.name] = optic
 

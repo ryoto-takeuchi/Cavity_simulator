@@ -33,9 +33,9 @@ def plot_cavity_layout(
         ax.scatter(points[:, 0] * 1e3, points[:, 1] * 1e3, s=16, color="#f28e2b", zorder=3)
     _draw_closure_gap(ax, layout)
 
-    symbol_size = cavity.layout.mirror_size
+    symbol_size = _max_symbol_size(layout, cavity.layout.mirror_size)
     for optic in layout.optics:
-        _draw_optic(ax, optic, symbol_size)
+        _draw_optic(ax, optic, cavity.layout.mirror_size)
 
     ax.set_aspect("equal", adjustable="box")
     ax.set_xlabel("x (mm)")
@@ -146,8 +146,9 @@ def _beam_envelope_segments(
     return envelopes
 
 
-def _draw_optic(ax: plt.Axes, optic: LayoutOptic, symbol_size: float) -> None:
+def _draw_optic(ax: plt.Axes, optic: LayoutOptic, default_symbol_size: float) -> None:
     position = np.array(optic.position, dtype=float)
+    symbol_size = optic.mirror_size if optic.mirror_size is not None else default_symbol_size
     if optic.element_type in {"FlatMirror", "CurvedMirror"}:
         if optic.tangent_angle is None:
             ax.plot(position[0] * 1e3, position[1] * 1e3, "s", color="#4e79a7")
@@ -208,12 +209,10 @@ def _optic_label(optic: LayoutOptic) -> str:
     return optic.name
 
 
-def _symbol_size(points: np.ndarray) -> float:
-    if len(points) < 2:
-        return 0.01
-    span = np.ptp(points, axis=0)
-    scale = max(float(np.max(span)), 0.01)
-    return max(0.004, 0.08 * scale)
+def _max_symbol_size(layout: CavityLayout, default_symbol_size: float) -> float:
+    sizes = [default_symbol_size]
+    sizes.extend(optic.mirror_size for optic in layout.optics if optic.mirror_size is not None)
+    return max(sizes)
 
 
 def _curved_mirror_points(

@@ -12,7 +12,7 @@ cavity:
 elements:
   - name: M1
     type: curved_mirror
-    Rc: 2.00 m
+    Rc: 1.77 m
     AOI: 0 deg
     T: 100 ppm
     L: 10 ppm
@@ -23,20 +23,20 @@ elements:
 
   - name: T1
     type: curved_mirror
-    Rc: -40 mm
-    AOI: 3 deg
-    T: 10 ppm
+    Rc: -31 mm
+    AOI: 5 deg
+    T: 20 ppm
     L: 10 ppm
 
   - name: space23
     type: space
-    length: 130 mm
+    length: 100 mm
 
   - name: T2
     type: curved_mirror
-    Rc: 300 mm
-    AOI: -3 deg
-    T: 10 ppm
+    Rc: 229 mm
+    AOI: -5 deg
+    T: 20 ppm
     L: 10 ppm
 
   - name: space34
@@ -45,16 +45,36 @@ elements:
 
   - name: M4
     type: mirror
-    AOI: 45 deg
-    T: 10 ppm
+    AOI: 7.5 deg
+    T: 20 ppm
     L: 10 ppm
 
   - name: space45
     type: space
-    length: 100 mm
+    length: 140 mm
 
   - name: M5
     type: mirror
+    AOI: -7.5 deg
+    T: 20 ppm
+    L: 10 ppm
+
+  - name: space56
+    type: space
+    length: 100 mm
+
+  - name: M6
+    type: mirror
+    AOI: -7.5 deg
+    T: 20 ppm
+    L: 10 ppm
+
+  - name: space67
+    type: space
+    length: 100 mm
+
+  - name: M7
+    type: mirror
     AOI: 0 deg
-    T: 10 ppm
+    T: 20 ppm
     L: 10 ppm
